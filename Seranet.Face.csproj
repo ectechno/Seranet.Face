@@ -58,7 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Index.html" />
-    <None Include="init-data.json" />
+    <Content Include="main.css" />
+    <Content Include="main.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

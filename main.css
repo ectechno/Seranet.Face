@@ -8,11 +8,13 @@
     color: white;
     padding-left: 50px;
     font-family: monospace;
+    padding-right: 50px;
 }
 
 a {
     color: white;
     text-decoration: none;
+    padding-right: 40px;
 }
 
 body {
@@ -28,4 +30,10 @@ iframe {
     height: 100%; 
     width: 100%;
     border: 0;
+    z-index: 50;
 }
+
+#urgent {
+    display: none;
+}
+

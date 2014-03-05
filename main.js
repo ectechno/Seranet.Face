@@ -21,7 +21,56 @@ var progressLink = function () {
         window.index = 0;
     }
     //console.log(window.allLinks[index++]);
-    document.getElementById('content_frame').src = window.allLinks[window.index++];
+    $('#content_frame').attr('src', window.allLinks[window.index++].url);
+}
+
+var showUrgent = function (urgent) {
+    $('#content_frame').attr('src', urgent);
+    $('#links').hide();
+    $('#urgent').show();
+}
+
+var drawMenu = function () {
+    $('#pages').empty();
+    for(var i=0; i<window.allLinks.length; i++) {
+        //console.log(window.allLinks[i]);
+        $('#page-list').append('<li><a class="link" href="#" data-index="' + i + '">' + window.allLinks[i].name + '</a></li>')
+    }
+
+    $('.link').click(function (e) {
+        var index = $(this).data("index");
+        $('#content_frame').attr('src', window.allLinks[index].url);
+        //pause the rotation
+        if (window.timer) {
+            stopTimer();
+            $('#pause').html('Resume');
+        }
+        e.preventDefault();
+    });
+
+    $('#menu').dropit();
+}
+
+var showProject = function (snapshot) {
+    //read changed project data
+    var project = snapshot.val().projects[location.hash.substr(1)];
+    if (!project) {
+        alert('Requested project "' + location.hash.substr(1) + '" does not exist.');
+        return;
+    }
+    var common = snapshot.val().common;
+    //set to global values
+    window.timing = snapshot.val().timing;
+    window.allLinks = project.concat(common);
+    //do UI changes
+    $('#links').show();
+    $('#urgent').hide();
+
+    //start link rolling
+    startTimer();
+
+    //create the links menu
+    drawMenu();
 }
 
 // handler for any change in the root element
@@ -31,33 +80,24 @@ rootRef.on('value', function (snapshot) {
     //lets stop the current timer first of all
     stopTimer();
 
-    //read changed project data
-    var project = snapshot.val().projects[location.hash.substr(1)];
-
     //if urgent message available show it indefinitly
     var urgent = snapshot.val().urgent;
     if (urgent) {
-        document.getElementById('content_frame').src = urgent;
-    } else if (project) {
-        //merge common and project URL arrays
-        window.allLinks = project.concat(snapshot.val().common);
-        window.timing = snapshot.val().timing;
-        startTimer();
+        showUrgent(urgent);
     } else {
-        alert('Requested project "' + location.hash.substr(1) + '" does not exist.');
+        showProject(snapshot);
     }
 });
 
-var timerToggle = function () {
-    var toggleBtn = document.getElementById('btnTimer');
+$('#pause').click(function () {
     if (window.timer) {
         stopTimer();
-        toggleBtn.innerHTML = 'Resume'
+        $(this).html('Resume');
     } else {
         startTimer();
-        toggleBtn.innerHTML = 'Pause'
+        $(this).html('Pause');
     }
-}
+});
 
 var nextUrl = function () {
     progressLink();
